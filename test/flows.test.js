@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { checkout } from '../src/api/checkout.js';
+import { invoiceBatch } from '../src/jobs/invoiceBatch.js';
+import { refundPreview } from '../src/support/refundPreview.js';
+import { buildOffer } from '../src/marketing/buildOffer.js';
+import { summarizeSavings } from '../src/analytics/summarizeSavings.js';
+import { shippingQuote } from '../src/shipping/shippingQuote.js';
+const order = { id: 'O-1', subtotal: 100, tier: 'gold' };
+test('checkout total', () => assert.equal(checkout(order).body.total, 80));
+test('invoice amount', () => assert.equal(invoiceBatch([order])[0].amountDue, 80));
+test('refund amount', () => assert.equal(refundPreview(order).refundable, 80));
+test('offer text', () => assert.equal(buildOffer(100, 'gold'), 'Save 20.00'));
+test('savings sum', () => assert.equal(summarizeSavings([order, order]), 40));
+test('shipping independent', () => assert.equal(shippingQuote(120), 110));
