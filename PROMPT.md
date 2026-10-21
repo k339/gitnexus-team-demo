@@ -1,11 +1,60 @@
-เรากำลังจะเปลี่ยน `src/pricing/calculateDiscount.js` ให้ `calculateDiscount(subtotal, tier)` คืนค่า `{ amount: number, rate: number }` แทนตัวเลข โดยคงวิธีคำนวณเดิม
+# Prompts สำหรับ GitNexus demo
 
-ยังไม่ต้องแก้โค้ด โปรดสำรวจ repository และรายงาน:
-1. production functions ใน src/ ที่เรียกหรือใช้ผลลัพธ์ฟังก์ชันนี้โดยตรง รวมกรณี alias/re-export และอธิบายว่าต้องแก้การใช้ค่าตรงไหน
-2. entry points ใน src/ ที่ได้รับผลกระทบทางอ้อม
-3. ฟังก์ชันชื่อเหมือนกันที่ไม่เกี่ยวกับการเปลี่ยนนี้ ถ้ามี
-4. tests ที่ควรรันหรือเพิ่ม
+เปิด Claude Code จากโฟลเดอร์ project แล้วส่งทีละหัวข้อ
+ใช้ชื่อ function พร้อม path เพื่อระบุ target ให้ชัดเจน
 
-แนบ path และชื่อฟังก์ชันเป็นหลักฐาน แยกข้อยืนยันจากข้อสันนิษฐาน
-ไม่นับ scripts, tests และโมดูลที่ re-export อย่างเดียวเป็น production callers
-ใช้เครื่องมือที่มีได้ทั้งหมด จำกัดเวลา 5 นาที ถ้าไม่ทันให้รายงานส่วนที่ตรวจแล้ว
+## เช็กการเชื่อมต่อ
+
+```text
+ใช้ GitNexus tools เช็กว่ามองเห็น project นี้หรือไม่
+บอกชื่อ project ที่พบ และตรวจว่า index พร้อมใช้งาน
+ยังไม่ต้องวิเคราะห์หรือแก้ source code
+ถ้าเรียก tools ไม่ได้ ให้บอกข้อผิดพลาดก่อน
+```
+
+## Prompt 1: ทำความเข้าใจ project
+
+```text
+ใช้ GitNexus tools ช่วยสำรวจ project นี้ แล้วเปิด source code ประกอบ
+อธิบายสั้น ๆ ว่าตอน checkout, ออก invoice และ refund มีโค้ดส่วนไหนทำงานบ้าง
+แนบ path และชื่อ function ที่เกี่ยวข้อง เพื่อให้เปิดดูตามได้
+ยังไม่ต้องแก้ source code
+```
+
+## Prompt 2: วิเคราะห์ก่อนเปลี่ยน return type
+
+```text
+ใช้ GitNexus tools วิเคราะห์ผลกระทบของการเปลี่ยน function นี้:
+
+src/pricing/calculateDiscount.js
+calculateDiscount(subtotal, tier)
+
+ปัจจุบัน return เป็น number เช่น 20
+เราต้องการเปลี่ยนให้ return เป็น object เช่น { amount: 20, rate: 0.2 }
+โดยคงวิธีคำนวณส่วนลดเดิม
+
+ช่วยหา:
+1. Direct callers/consumers ใน src/ ที่ต้องตรวจการใช้ return value
+2. Indirect callers หรือ entry points ที่เกี่ยวข้องต่ออีกชั้น
+3. function ชื่อซ้ำที่เป็นคนละตัวและไม่เกี่ยวกับการเปลี่ยนนี้
+
+เปิด source code ยืนยัน พร้อมระบุ path และชื่อ function
+แยกสิ่งที่ยืนยันแล้วออกจากจุดที่ยังต้องตรวจเพิ่ม
+ยังไม่ต้องแก้ source code
+```
+
+## Prompt 3: เปิด source ยืนยันและวางแผน
+
+```text
+จากผลเมื่อกี้ ช่วยเปิด source code ให้ดูตัวอย่างของ:
+- Direct caller หนึ่งจุด
+- Caller ที่ใช้ alias หรือ re-export
+- function ชื่อซ้ำใน shipping ว่าใช่ตัวเดียวกับ pricing หรือไม่
+
+อธิบายว่าตอนนี้โค้ดใช้ return value อย่างไร
+ถ้าปรับเป็น object ต้องเปลี่ยนการอ่านค่าตรงไหน
+แล้วสรุปแผนแก้ไขกับ tests ที่ควรรันหรือเพิ่ม
+
+แนบ path และชื่อ function ของทุกตัวอย่าง
+ยังไม่ต้องแก้ source code
+```
